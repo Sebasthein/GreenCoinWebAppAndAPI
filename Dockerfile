@@ -1,4 +1,8 @@
-FROM openjdk:21-jdk-slim
+# Opción 1: OpenJDK 21 alternativo
+FROM openjdk:21-slim
+
+# Opción 2: Si no funciona, usa esta
+# FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
