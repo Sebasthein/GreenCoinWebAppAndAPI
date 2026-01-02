@@ -8,12 +8,15 @@ pipeline {
 
     // --- AQUÍ ESTÁ LA MAGIA ---
     environment {
-        // Sobreescribimos la URL de la base de datos.
-        // host.docker.internal apunta a tu ordenador físico desde el contenedor
-        SPRING_DATASOURCE_URL = "jdbc:postgresql://host.docker.internal:5432/reciclaje"
+        // CAMBIO IMPORTANTE:
+        // En lugar de 'host.docker.internal', usamos el NOMBRE DEL CONTENEDOR 'pg-jenkins'
+        // Docker resolverá esto automáticamente gracias a la red que creamos.
+        SPRING_DATASOURCE_URL = "jdbc:postgresql://pg-jenkins:5432/reciclaje"
+        
         SPRING_DATASOURCE_USERNAME = "postgres"
-        SPRING_DATASOURCE_PASSWORD = "secret"
-        // Asegura que Hibernate no intente validar cosas raras al inicio
+        // Asegúrate de que esta contraseña coincida con la de tu contenedor pg-jenkins
+        SPRING_DATASOURCE_PASSWORD = "secret" 
+        
         SPRING_JPA_HIBERNATE_DDL_AUTO = "update"
     }
 
