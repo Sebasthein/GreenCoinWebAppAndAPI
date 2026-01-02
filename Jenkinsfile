@@ -3,12 +3,13 @@ pipeline {
     
     tools {
         maven 'Maven-3' 
-        jdk 'Java-21' 
+        jdk 'Java-21'
+        // Docker ya está instalado en el sistema, no necesitamos tool automática
     }
 
     environment {
         // --- CONFIGURACIÓN DB ---
-        // Nota: Para el "build" de Maven, seguimos usando el nombre del host 'pg-jenkins'
+        // 'pg-jenkins' es el nombre del contenedor de Postgres
         SPRING_DATASOURCE_URL = "jdbc:postgresql://pg-jenkins:5432/reciclaje"
         SPRING_DATASOURCE_USERNAME = "postgres"
         SPRING_DATASOURCE_PASSWORD = "secret" 
@@ -17,8 +18,7 @@ pipeline {
         // --- CONFIGURACIÓN DOCKER ---
         IMAGE_NAME = "mi-app-springboot"
         CONTAINER_NAME = "mi-app-container"
-        // ¡IMPORTANTE! Pon aquí el nombre real de tu red docker
-        NETWORK_NAME = "red-jenkins" 
+        NETWORK_NAME = "red-jenkins"  // <--- ¡Confirma que tu red se llama así!
         PORT_HOST = "9090"
     }
 
@@ -26,7 +26,7 @@ pipeline {
         stage('Verificar Entorno 🕵️‍♂️') {
             steps {
                 sh 'java -version'
-                sh 'docker --version' // Verificamos que Jenkins vea a Docker
+                sh 'docker version' // Debería mostrar Cliente y Servidor
             }
         }
         
@@ -34,8 +34,6 @@ pipeline {
             steps {
                 echo 'Construyendo el artefacto .jar con Maven...'
                 sh 'mvn clean package -DskipTests' 
-                // Nota: A veces saltamos tests aquí si vamos a testear la imagen, 
-                // pero si quieres correrlos, quita -DskipTests.
             }
         }
 
@@ -43,7 +41,6 @@ pipeline {
             steps {
                 script {
                     echo 'Construyendo la imagen Docker...'
-                    // Esto usa el Dockerfile que acabamos de crear
                     sh "docker build -t ${IMAGE_NAME}:latest ."
                 }
             }
@@ -53,12 +50,9 @@ pipeline {
             steps {
                 script {
                     echo 'Deteniendo contenedor anterior (si existe)...'
-                    // El || true evita que el pipeline falle si el contenedor no existe aún
                     sh "docker rm -f ${CONTAINER_NAME} || true"
 
                     echo 'Desplegando nuevo contenedor...'
-                    // --network: Vital para que vea a Postgres
-                    // -p: Mapeamos el puerto 9090 de tu PC al 8080 del contenedor
                     sh """
                         docker run -d \
                         --name ${CONTAINER_NAME} \
@@ -71,15 +65,6 @@ pipeline {
                     """
                 }
             }
-        }
-    }
-    
-    post {
-        success {
-            echo '¡Éxito total! La aplicación está corriendo en Docker en el puerto 9090.'
-        }
-        failure {
-            echo '😱 Algo falló. Revisa los logs.'
         }
     }
 }
