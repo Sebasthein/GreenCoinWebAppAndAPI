@@ -1,19 +1,11 @@
-FROM eclipse-temurin:21-jdk
+# Usamos una imagen base ligera de Java 21 (igual que en tu pipeline)
+FROM eclipse-temurin:21-jdk-alpine
 
-WORKDIR /app
+# Creamos un volumen para archivos temporales (útil para Spring Boot)
+VOLUME /tmp
 
-# Copiar Maven wrapper
-COPY .mvn/ .mvn/
-COPY mvnw .
-RUN chmod +x mvnw
+# Copiamos el jar que generó Jenkins (el asterisco es por si cambia la versión)
+COPY target/*.jar app.jar
 
-# Copiar archivos del proyecto
-COPY pom.xml .
-COPY src ./src
-
-# Compilar
-RUN ./mvnw clean package -DskipTests
-
-EXPOSE 8080
-
-CMD ["java", "-jar", "target/reciclaje-0.0.1-SNAPSHOT.jar"]
+# El comando que se ejecutará al iniciar el contenedor
+ENTRYPOINT ["java","-jar","/app.jar"]
