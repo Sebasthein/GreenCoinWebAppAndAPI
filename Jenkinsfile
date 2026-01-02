@@ -1,35 +1,31 @@
 pipeline {
     agent any
     
-    // Aquí invocamos la herramienta que configuramos en el Paso 1
     tools {
         maven 'Maven-3' 
-        jdk 'Java-21'
+        jdk 'Java-21' 
     }
 
     stages {
-        stage('Bajar Código 📥') {
+        stage('Verificar Versiones 🧐') {
             steps {
-                // Como usamos "Pipeline from SCM", el código ya se baja solo.
-                echo 'El código ya está aquí gracias a Git...'
+                sh 'java -version'
+                sh 'mvn -version'
             }
         }
         
-        stage('Construir y Testear 🔨') {
+        stage('Construir sin Tests 🔨') {
             steps {
-                echo 'Compilando y ejecutando tests...'
-                // Este es el comando mágico de Maven.
-                // 'clean': limpia compilaciones viejas.
-                // 'package': compila, pasa los tests y crea el archivo .jar
-                sh 'mvn clean package' 
+                echo 'Compilando código y empaquetando...'
+                // -DskipTests: La clave para que no intente conectar a la BD
+                sh 'mvn clean package -DskipTests' 
             }
         }
     }
     
     post {
         success {
-            echo '¡Éxito! Guardando el archivo .jar...'
-            // Spring Boot deja el ejecutable en la carpeta "target"
+            echo '¡Empaquetado exitoso! Guardando el .jar...'
             archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
         }
     }
