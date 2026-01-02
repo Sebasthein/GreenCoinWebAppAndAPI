@@ -4,6 +4,7 @@ pipeline {
     // Aquí invocamos la herramienta que configuramos en el Paso 1
     tools {
         maven 'Maven-3' 
+        jdk 'Java-21'
     }
 
     stages {
