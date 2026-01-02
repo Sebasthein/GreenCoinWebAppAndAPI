@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Verificar Versiones 🧐') {
+        stage('Holaaa, Verificar Versiones 🧐') {
             steps {
                 sh 'java -version'
                 sh 'mvn -version'
