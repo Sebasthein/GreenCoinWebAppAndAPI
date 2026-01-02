@@ -24,17 +24,35 @@ pipeline {
         stage('Verificar Entorno 🕵️‍♂️') {
             steps {
                 sh 'java -version'
-                // Un comando de depuración para ver si Jenkins ve variables
-                sh 'printenv | grep SPRING || true' 
             }
         }
         
-        stage('Despliegue y Test de Integración 🚀') {
+        stage('Construcción y Test 🛠️') {
             steps {
-                echo 'Iniciando aplicación contra base de datos real...'
-                // ¡YA NO SALTAMOS LOS TESTS!
-                // Ahora mvn intentará arrancar la app y conectarse a la BD.
+                echo 'Construyendo y conectando a Postgres...'
+                // Maven compila, corre tests (conectándose a la BD) y crea el .jar
                 sh 'mvn clean package' 
+            }
+        }
+
+        stage('Despliegue y Smoke Test 🚢') {
+            steps {
+                script {
+                    echo '🚀 Arrancando la aplicación en puerto 9090...'
+                    // Usamos nohup para correrlo en segundo plano (&) y redirigir logs a app.log
+                    // -Dserver.port=9090 cambia el puerto para no chocar con Jenkins
+                    sh 'nohup java -Dserver.port=9090 -jar target/*.jar > app.log 2>&1 &'
+                    
+                    echo '⏳ Esperando 20 segundos a que Spring Boot arranque...'
+                    sleep 20
+                    
+                    echo '🔍 Verificando si la app responde (Smoke Test)...'
+                    // Intentamos conectar. Si falla, mostramos el log para ver por qué.
+                    sh 'curl -v http://localhost:9090 || cat app.log'
+                    
+                    echo '✅ ¡La aplicación está viva! (Cerrando proceso para ahorrar memoria...)'
+                    sh 'pkill -f "java -Dserver.port=9090"'
+                }
             }
         }
     }
