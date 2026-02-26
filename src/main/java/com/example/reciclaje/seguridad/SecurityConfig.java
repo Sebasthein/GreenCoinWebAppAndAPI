@@ -58,6 +58,7 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/registro").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/plugins/**", "/uploads/**", "/api/reciclajes/imagen/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
@@ -83,7 +84,7 @@ public class SecurityConfig {
                 })
                 .authenticationEntryPoint((request, response, authException) -> {
                     // Check if it's an API request
-                    String requestUri = ((jakarta.servlet.http.HttpServletRequest) response).getRequestURI();
+                    String requestUri = request.getRequestURI();
                     if (requestUri.startsWith("/api/")) {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("application/json");
