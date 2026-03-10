@@ -118,7 +118,6 @@ public class Usuario implements UserDetails {
     public void setPuntos(int puntos){
     	
     	this.puntos = puntos;
-    	actualizarPuntos();
     	
     }
 

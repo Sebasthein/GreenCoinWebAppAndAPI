@@ -27,8 +27,8 @@ public class UsuarioDTO {
         this.nombre = usuario.getNombre();
         this.email = usuario.getEmail();
         this.puntos = usuario.getPuntos();
-        this.nombreNivel = usuario.getNivel().getNombre();
-       this.direccion= usuario.getDireccion();
+        this.nombreNivel = usuario.getNivel() != null ? usuario.getNivel().getNombre() : "Nivel Inicial";
+        this.direccion= usuario.getDireccion();
       
     }
 

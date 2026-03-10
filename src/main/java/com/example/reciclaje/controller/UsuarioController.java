@@ -20,10 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.reciclaje.entidades.Rol;
 import com.example.reciclaje.entidades.Usuario;
@@ -96,7 +93,9 @@ public class UsuarioController {
 	         Usuario usuarioGuardado = usuarioRepository.save(usuario);
 	         
 	         UsuarioDTO nuevoUsuario = new UsuarioDTO(usuarioGuardado);
-	         nuevoUsuario.setAvatarId(usuarioGuardado.getAvatarId().toString()); 
+	         if (usuarioGuardado.getAvatarId() != null) {
+	             nuevoUsuario.setAvatarId(usuarioGuardado.getAvatarId()); 
+	         }
 	         
 	         response.put("success", true);
 	         response.put("usuario", nuevoUsuario);

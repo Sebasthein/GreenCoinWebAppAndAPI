@@ -55,7 +55,7 @@ public class SecurityConfig {
                 // 🔥 PERMITIR TODOS LOS ENDPOINTS DE API SIN AUTENTICACIÓN
                 .requestMatchers("/api/auth/login**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/login", "/registro").permitAll()
+                .requestMatchers("/login", "/registro", "/api/registro", "/api/usuarios/api/registro").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/plugins/**", "/uploads/**", "/api/reciclajes/imagen/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
